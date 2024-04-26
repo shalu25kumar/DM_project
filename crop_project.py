@@ -3,8 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-# Display title with custom font
+# Display title with custom fontDD
 st.title("CROP RECOMMENDATION")
 
 #load data
@@ -74,7 +73,7 @@ def main():
               if st.button("Button 3"):
                st.write("Button 3 clicked!")
 
-
+#comment
 
 if __name__ == "__main__":
     main()
