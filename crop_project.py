@@ -8,6 +8,8 @@ import seaborn as sns
 st.title("CROP RECOMMENDATION")
 
 #load data
+
+exaomple push djkbskfbkSJFBkJDB
 data =pd.read_csv("crop_recommendation.csv")
 st.write(data)
 
