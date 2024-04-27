@@ -2,6 +2,47 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import base64
+import requests
+from io import BytesIO
+from PIL import Image
+import os
+import requests
+
+def set_background(background_image_url):
+    """
+    Function to set background image using HTML and CSS.
+    """
+    try:
+        # Load the image from the URL
+        response = requests.get(background_image_url)
+        response.raise_for_status()
+
+        # Convert the image to base64 encoding
+        image = Image.open(BytesIO(response.content))
+        buffered = BytesIO()
+        image.save(buffered, format="JPEG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+
+        # Apply HTML and CSS to set background image
+        st.markdown(
+            f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpeg;base64,{img_str}");
+            background-size: cover;
+        }}
+        </style>
+        """,
+            unsafe_allow_html=True
+        )
+
+    except requests.exceptions.RequestException as e:
+        st.write(f"Error loading image from URL: {e}")
+
+    except Image.UnidentifiedImageError as e:
+        st.write(f"Error identifying image format: {e}")
+#
 
 # Display title with custom fontDD
 st.title("CROP RECOMMENDATION")
@@ -24,9 +65,12 @@ if uploaded_file:
     st.write("## CSV Data")
     st.dataframe(data)
 
-def main():
-    st.title("Recommendations")
 
+
+def main():
+
+    background_image_url = "https://cdn.pixabay.com/photo/2024/04/08/14/09/nature-8683570_1280.jpg"
+    set_background(background_image_url)
     # Six input fields
     st.header("Your Data")
     
@@ -72,6 +116,9 @@ def main():
     with coll3:
               if st.button("Button 3"):
                st.write("Button 3 clicked!")
+
+
+
 
 #comment
 
