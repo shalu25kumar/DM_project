@@ -1,4 +1,12 @@
 from statistics import LinearRegression
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.calibration import LabelEncoder
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -179,6 +187,83 @@ def predictRegression(N, P, K, temp, hum, ph, rainfall):
     
     return value
 
+# Example function to define best crop per cluster
+def define_best_crops_per_cluster(cluster_labels, csv_data):
+    best_crops = {}
+    for cluster in set(cluster_labels):
+        cluster_crops = csv_data[csv_data['cluster'] == cluster]['label']
+        best_crop = cluster_crops.value_counts().idxmax()  # This assumes the most common crop is the best
+        best_crops[cluster] = best_crop
+    return best_crops
+
+
+# Function to recommend crops based on input conditions
+def recommend_crops(input_temperature, input_rainfall, input_ph, input_humidity, input_N, input_P, input_K, scaler, kmeans, best_crops,csv_data):
+    input_data_scaled = scaler.transform([[input_temperature, input_rainfall, input_ph, input_humidity, input_N, input_P, input_K]])
+    predicted_cluster = kmeans.predict(input_data_scaled)[0]
+    best_crop = best_crops[predicted_cluster]
+  
+    # Get other crops in the same cluster
+    other_crops = csv_data[csv_data['cluster'] == predicted_cluster]['label'].unique().tolist()
+    other_crops.remove(best_crop)
+  
+    return  predicted_cluster,best_crop,other_crops
+
+
+def Kmeans(N, P, K, temp, hum, ph, rainfall):
+    # Load your dataset
+
+    csv_data = pd.read_csv('crop_recommendation.csv')  # Update path accordingly
+
+    k = 5  # Number of clusters
+    numeric_data = csv_data[['temperature', 'rainfall', 'ph', 'humidity', 'N', 'P', 'K']]
+    scaler = StandardScaler().fit(numeric_data)
+    kmeans = KMeans(n_clusters=k, random_state=0).fit(scaler.transform(numeric_data))
+    csv_data['cluster'] = kmeans.labels_
+    best_crops = define_best_crops_per_cluster(csv_data['cluster'], csv_data)
+    predicted_cluster, best_crop, other_crops = recommend_crops(temp, rainfall, ph, hum, N, P, K, scaler, kmeans,best_crops,csv_data)
+    # Define which columns are numeric and which are categorical
+    numeric_cols = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+    categorical_cols = ['label']  
+
+    # Define preprocessing steps for numeric and categorical data
+    numeric_transformer = Pipeline(steps=[
+        ('scaler', StandardScaler())])
+
+    categorical_transformer = Pipeline(steps=[
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))])
+
+    # Combine preprocessing steps
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numeric_transformer, numeric_cols),
+            ('cat', categorical_transformer, categorical_cols)])
+
+    # Define the KMeans clustering pipeline
+    kmeans_pipe = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('kmeans', KMeans(n_clusters=5, random_state=0))
+    ])
+
+    # Fit the pipeline
+    kmeans_pipe.fit(csv_data[numeric_cols + categorical_cols])
+
+    # Get cluster labels
+    csv_data['cluster'] = kmeans_pipe.named_steps['kmeans'].labels_
+
+
+    grouped = csv_data.groupby('cluster')['label'].value_counts().unstack(fill_value=0)
+
+
+    # Normalize the counts to get a score that sums to 1 for comparison
+    grouped_norm = grouped.div(grouped.sum(axis=1), axis=0)
+
+    return  best_crop, other_crops
+
+
+
+
+
 def pyODLoc():
     data=pd.read_csv("crop_recommendation.csv")
     # Separating  features and labels
@@ -198,12 +283,9 @@ def pyODLoc():
     lof.fit(X_train_scaled)
     train_outlier_scores = lof.decision_function(X_train_scaled)
     test_outlier_scores = lof.decision_function(X_test_scaled)
-    #print("train_outlier_scores")
-    #print(train_outlier_scores)
-    #print("test_outlier_scores")
-    #print(test_outlier_scores)
+   
 
-
+     
    # Plot the histograms of the anomaly scores with threshold
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.histplot(train_outlier_scores, bins=50, kde=True, color='blue', alpha=0.5, label='Training Data', ax=ax)
@@ -214,7 +296,20 @@ def pyODLoc():
     ax.set_title('Comparison of Predicted and Actual Test Data')
     ax.legend()
     st.pyplot(fig)
-    
+    st.write(" ")
+
+
+    fig, ax = plt.subplots(figsize=(25, 10))
+    st.markdown("<p style='color:black; font-size:20px; font-weight:bold'>BOX PLOTS</p>", unsafe_allow_html=True)
+    # Use boxplot instead of histplot
+    sns.boxplot(x=y_test, y=test_outlier_scores, ax=ax)
+
+    # Customize the plot
+    ax.set_xlabel('Actual Labels')
+    ax.set_ylabel('Anomaly Score')
+    ax.set_title('Boxplot of Anomaly Scores by Actual Labels')
+    st.pyplot(fig)
+       
 
     
 
@@ -249,13 +344,12 @@ def main():
               inputph = st.text_input("pH Value    (should be between 2 and 10)", "")
 
 
-    #if not inputN or not inputP or not inputK or not inputT or not inputH or not inputph or not inputR:
-    #       st.write("Please fill in all the input fields.")
-    #        return
-              
-    st.header("Choose  an method from below :  ")
 
-    coll1, coll2, coll3 = st.columns(3)
+              
+    st.write(" ")
+    st.header("Choose a method :  ")
+
+    coll1, coll2, coll3,coll4 = st.columns(4)
 
     # Button 1 in the first column
     with coll1:
@@ -268,6 +362,9 @@ def main():
                  "Humidity:", inputH,
                  "pH Value:", inputph,
                  "Rainfall:", inputR)
+            if not inputN or not inputP or not inputK or not inputT or not inputH or not inputph or not inputR:
+                st.write("Please fill in all the input fields.")
+                return
             # call the predictRF function here with the input values
             result = predictRF(float(inputN), float(inputP), float(inputK), float(inputT), float(inputH), float(inputph), float(inputR))
             st.write("Recommended crop from Random Forest : ", result)
@@ -282,6 +379,9 @@ def main():
                  "Humidity:", inputH,
                  "pH Value:", inputph,
                  "Rainfall:", inputR)
+            if not inputN or not inputP or not inputK or not inputT or not inputH or not inputph or not inputR:
+                st.write("Please fill in all the input fields.")
+                return
             # call the predictRF function here with the input values
             Dresult = predictDtree(float(inputN), float(inputP), float(inputK), float(inputT), float(inputH), float(inputph), float(inputR))
             st.write("Recommended crop from Decision trees : ", Dresult)
@@ -296,24 +396,64 @@ def main():
                  "Humidity:", inputH,
                  "pH Value:", inputph,
                  "Rainfall:", inputR)
+            if not inputN or not inputP or not inputK or not inputT or not inputH or not inputph or not inputR:
+                st.write("Please fill in all the input fields.")
+                return
                 # call the predictRF function here with the input values
             Dresult = predictDtree(float(inputN), float(inputP), float(inputK), float(inputT), float(inputH), float(inputph), float(inputR))
             st.write("Recommended crop from Decision trees : ", Dresult)
 
-        print("")
+       
+    with coll4:
+        if st.button("K_Means Cluster"):
+            
+            st.write("N value:", inputN,
+                 "P value:", inputP, 
+                 "K value:", inputK, 
+                 "Tempature:",inputT,
+                 "Humidity:", inputH,
+                 "pH Value:", inputph,
+                 "Rainfall:", inputR)
+            if not inputN or not inputP or not inputK or not inputT or not inputH or not inputph or not inputR:
+                st.write("Please fill in all the input fields.")
+                return
+            # call the predictRF function here with the input values
+            result,suggestedcrops= Kmeans(float(inputN), float(inputP), float(inputK), float(inputT), float(inputH), float(inputph), float(inputR))
+            st.write("Recommended crop from  : ", result)
+            st.write("suggested crops  : ", suggestedcrops)
    
-   
+
+    
 
 
 
 
+    st.header("Data being used")
 
 
+    #load data (default loading)
+    data = pd.read_csv("crop_recommendation.csv")
 
+    # Define custom CSS
+    css = """
+        <style>
+            .dataframe {
+                background-color: transparent !important;
+                color: black ;
+            }
+        </style>
+    """
 
+    # Display data with custom CSS
+    st.write(css, unsafe_allow_html=True)
+    st.dataframe(data.style.set_properties(**{'width': '500px', 'height': '100px'}))
 
+  
 
-
+    st.write(" ")
+    st.header(" ")
+    st.header("LOC Algorithm to determine outliers in data")
+    st.write("Training and Test Histogram")
     pyODLoc()
 
 
