@@ -10,12 +10,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.calibration import LabelEncoder
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import MinMaxScaler
 from pyod.models.lof import LOF
 import numpy as np
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import base64
 import requests
 from io import BytesIO
@@ -98,14 +100,9 @@ if uploaded_file:
 
  #working
 def predictRF(N, P, K, temp, hum, ph, rainfall):
-    import pandas as pd
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import accuracy_score
-    from sklearn.preprocessing import MinMaxScaler
 
     # Load the dataset
-    csv_data = pd.read_csv('crop_recommendation.csv')
+    csv_data = pd.read_csv('dataset/crop_recommendation.csv')
     # Extract the features and label columns
     X = csv_data.drop('label', axis=1).values
     y = csv_data['label'].values
@@ -128,13 +125,8 @@ def predictRF(N, P, K, temp, hum, ph, rainfall):
 
 #working
 def predictDtree(N, P, K, temp, hum, ph, rainfall):
-    import pandas as pd
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import accuracy_score
-    from sklearn.preprocessing import MinMaxScaler
     # Load the dataset
-    csv_data = pd.read_csv('crop_recommendation.csv')
+    csv_data = pd.read_csv('dataset/crop_recommendation.csv')
     # Extract the features and label columns
     X = csv_data.drop('label', axis=1).values
     y = csv_data['label'].values
@@ -158,12 +150,8 @@ def predictDtree(N, P, K, temp, hum, ph, rainfall):
 
 
 def predictRegression(N, P, K, temp, hum, ph, rainfall):
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import accuracy_score
-    from sklearn.preprocessing import MinMaxScaler
     # Load the dataset
-    csv_data = pd.read_csv('crop_recommendation.csv')
+    csv_data = pd.read_csv('dataset/crop_recommendation.csv')
     # Extract the features and label columns
     X = data[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
     y = data['label']
@@ -213,7 +201,7 @@ def recommend_crops(input_temperature, input_rainfall, input_ph, input_humidity,
 def Kmeans(N, P, K, temp, hum, ph, rainfall):
     # Load your dataset
 
-    csv_data = pd.read_csv('crop_recommendation.csv')  # Update path accordingly
+    csv_data = pd.read_csv('dataset/crop_recommendation.csv')  # Update path accordingly
 
     k = 5  # Number of clusters
     numeric_data = csv_data[['temperature', 'rainfall', 'ph', 'humidity', 'N', 'P', 'K']]
@@ -265,7 +253,7 @@ def Kmeans(N, P, K, temp, hum, ph, rainfall):
 
 
 def pyODLoc():
-    data=pd.read_csv("crop_recommendation.csv")
+    data=pd.read_csv("dataset/crop_recommendation.csv")
     # Separating  features and labels
     X = data.iloc[:, :-1].values  # Features: N, P, K, temperature, humidity, ph, rainfall
     y = data.iloc[:, -1].values    # Labels
@@ -432,7 +420,7 @@ def main():
 
 
     #load data (default loading)
-    data = pd.read_csv("crop_recommendation.csv")
+    data = pd.read_csv("dataset/crop_recommendation.csv")
 
     # Define custom CSS
     css = """

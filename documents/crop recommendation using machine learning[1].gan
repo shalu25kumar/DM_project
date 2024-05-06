@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="crop recommendation using machine learning" company="Saint Peters" webLink="http://" view-date="2024-04-02" view-index="0" gantt-divider-location="379" resource-divider-location="300" version="3.3.3300" locale="en_US">
+    <description><![CDATA[This is a Data Mining project which involves Machine Learning.]]></description>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="188" order="0"/>
+        <field id="tpd4" name="Begin date" width="94" order="1"/>
+        <field id="tpd5" name="End date" width="96" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <option id="color.recent"><![CDATA[#00ff33 #0000ff #ff0000]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="2" uid="0498424db9be4195a11c641cd2ce39c4" name="Data Collection" meeting="false" start="2024-04-03" duration="11" complete="100" thirdDate="2024-04-03" thirdDate-constraint="0" expand="true">
+            <depend id="3" type="2" difference="0" hardness="Strong"/>
+            <task id="30" uid="affb3b2502414a9a8f38dd1a29bb28ff" name="Defining problem statement" meeting="false" start="2024-04-11" duration="1" complete="100" thirdDate="2024-04-11" thirdDate-constraint="0" expand="true">
+                <notes><![CDATA[Recomending the cultivation of different types of crops based upon  climatic conditions]]></notes>
+                <depend id="22" type="2" difference="0" hardness="Strong"/>
+                <task id="20" uid="230d571d3d49413da1c339f94b759133" name="Identify data sources" meeting="false" start="2024-04-03" duration="6" complete="100" webLink="https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1E-SFSIeQpcbu5X9zISHPj66mL6I7kg1y%2Fedit%23gid%3D878297588" expand="true">
+                    <depend id="30" type="2" difference="0" hardness="Strong"/>
+                </task>
+            </task>
+            <task id="22" uid="dbe549e358db4ec1a3bc0aca23f6de86" name="Data cleaning and preprocessing" meeting="false" start="2024-04-12" duration="4" complete="100" expand="true"/>
+        </task>
+        <task id="3" uid="ae433b34a5f74eb7acc329c21970c9fc" name="Exploratory Data Analysis" color="#ff0000" meeting="false" start="2024-04-18" duration="3" complete="40" priority="2" expand="true">
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+            <task id="23" uid="7fee2612cfb146b1a8487dcf5088e500" name="Statistical analysis" meeting="false" start="2024-04-18" duration="2" complete="60" expand="true">
+                <depend id="31" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="31" uid="184fe8ffccaf4611af3aff017b209f26" name="Data Visualization" meeting="false" start="2024-04-22" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="4" uid="64a74aed0a8e4e7f87998882ba6b78f5" name="Feature Engineering" color="#0000ff" meeting="false" start="2024-04-23" duration="3" complete="0" expand="true">
+            <depend id="5" type="2" difference="0" hardness="Strong"/>
+            <task id="25" uid="40463ddcf14447e8a90d90f130611d2d" name="Selection of relevent features" meeting="false" start="2024-04-23" duration="1" complete="0" expand="true">
+                <depend id="26" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="26" uid="c93ea386768b497582c29a2a4e5a8dad" name="Data transformation" meeting="false" start="2024-04-24" duration="1" complete="0" expand="true">
+                <depend id="27" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="27" uid="67d76fae46364f82b3079a69eece5f71" name="Data normalization" meeting="false" start="2024-04-25" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="5" uid="eebc7952530c4ff7a920b2968ea03e6b" name="Model Development" color="#00ff33" meeting="false" start="2024-04-26" duration="4" complete="0" expand="true">
+            <task id="29" uid="1449b11620a240c198d2e7d862ce744e" name="Taining models" meeting="false" start="2024-04-26" duration="3" complete="0" expand="true">
+                <depend id="32" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="32" uid="7ecf18f7a737464e9d5c826aeeef42c8" name="Validation" meeting="false" start="2024-05-01" duration="1" complete="0" thirdDate="2024-04-26" thirdDate-constraint="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
